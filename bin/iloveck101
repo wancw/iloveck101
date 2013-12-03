@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+require 'set'
+require 'fileutils'
+
+def iloveck101(url)
+  page_uri = URI.parse(url)
+  if page_uri.hostname.nil? or not page_uri.hostname.end_with?('ck101.com')
+    STDERR.print "Unrecognizeed URL: #{url}\n"
+    return
+  end
+
+  case page_uri.path
+  when %r{thread-(\d+)-.+\.html}
+    thread_id = $1
+  else
+    STDERR.print "Unrecognizeed URL: #{url}\n"
+    return
+  end
+
+  page_content = page_uri.read
+
+  title = page_content.match(%r{<title>(.+)</title>})[1]
+    .split(' - ')[0]
+    .gsub('/', '')
+    .strip
+
+  image_url_set = Set.new(
+    page_content
+      .scan(%r{file="([^"]+)"})
+      .map { |e| e[0] }
+      .find_all { |e| e.index('.thumb.').nil?}
+  )
+
+  target_folder_path = File.expand_path("~/Pictures/iloveck101/#{thread_id} - #{title}")
+  if not Dir.exists?(target_folder_path)
+    FileUtils.mkdir_p(target_folder_path)
+  end
+
+  image_url_set.each { |image_url|
+    image_uri = page_uri.merge(image_url)
+    filename = File.expand_path(File.basename(image_uri.path), target_folder_path)
+    File.open(filename, 'wb') { |f|
+      f.write(open(image_uri).read)
+    }
+  }
+
+end
+
+if __FILE__ == $0
+  if ARGV.length > 1
+    iloveck101(ARGV[0])
+  else
+    STDERR.print "Usage: #{File.basename($0)} URL\n"
+  end
+end
