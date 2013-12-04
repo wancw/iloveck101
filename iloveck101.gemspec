@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'iloveck101'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.date        = '2013-12-03'
   s.summary     = 'Download images from ck101 thread'
   s.description = 'Download images from ck101 thread, inspired by tzangms.'
