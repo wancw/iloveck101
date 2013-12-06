@@ -76,10 +76,8 @@ def iloveck101(url)
   puts 'Done!'
 end
 
-if __FILE__ == $0
-  if ARGV.length >= 1
-    iloveck101(ARGV[0])
-  else
-    STDERR.print "Usage: #{File.basename($0)} URL\n"
-  end
+if ARGV.length >= 1
+  iloveck101(ARGV[0])
+else
+  STDERR.print "Usage: #{File.basename($0)} URL\n"
 end
