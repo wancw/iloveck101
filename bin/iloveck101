@@ -25,6 +25,8 @@ def iloveck101(url)
 
   title = page.title.split(' - ')[0].gsub('/', '').strip
 
+  puts "Parsing #{title}"
+
   image_url_set = Set.new(
     page.search('article img[file]')
       .map { |image_tag| image_tag['file'] }
@@ -36,13 +38,18 @@ def iloveck101(url)
     FileUtils.mkdir_p(target_folder_path)
   end
 
+  puts "Found #{image_url_set.length} images."
+
   image_url_set.each { |image_url|
+    puts "Downloading #{image_url}"
+
     image = agent.get(image_url)
 
     filename = File.expand_path(File.basename(image.uri.path), target_folder_path)
     image.save(filename)
   }
 
+  puts 'Done!'
 end
 
 if __FILE__ == $0
