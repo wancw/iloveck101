@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'open-uri'
 require 'set'
 require 'fileutils'
+require 'mechanize'
 
 def iloveck101(url)
   page_uri = URI.parse(url)
@@ -19,18 +19,16 @@ def iloveck101(url)
     return
   end
 
-  page_content = page_uri.read
+  agent = Mechanize.new
 
-  title = page_content.match(%r{<title>(.+)</title>})[1]
-    .split(' - ')[0]
-    .gsub('/', '')
-    .strip
+  page = agent.get(page_uri)
+
+  title = page.title.split(' - ')[0].gsub('/', '').strip
 
   image_url_set = Set.new(
-    page_content
-      .scan(%r{file="([^"]+)"})
-      .map { |e| e[0] }
-      .find_all { |e| e.index('.thumb.').nil?}
+    page.search('article img[file]')
+      .map { |image_tag| image_tag['file'] }
+      .find_all { |image_url| image_url.index('.thumb.').nil?}
   )
 
   target_folder_path = File.expand_path("~/Pictures/iloveck101/#{thread_id} - #{title}")
@@ -39,11 +37,10 @@ def iloveck101(url)
   end
 
   image_url_set.each { |image_url|
-    image_uri = page_uri.merge(image_url)
-    filename = File.expand_path(File.basename(image_uri.path), target_folder_path)
-    File.open(filename, 'wb') { |f|
-      f.write(open(image_uri).read)
-    }
+    image = agent.get(image_url)
+
+    filename = File.expand_path(File.basename(image.uri.path), target_folder_path)
+    image.save(filename)
   }
 
 end

@@ -10,4 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://github.com/wancw/iloveck101'
   s.executables << 'iloveck101'
   s.license     = 'MIT'
+
+  s.add_dependency 'mechanize', '~> 2.7.3'
 end
