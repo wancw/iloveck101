@@ -23,6 +23,30 @@ def iloveck101(url)
 
   page = agent.get(page_uri)
 
+  if not page.search('#messagelogin').empty?
+    puts 'Need to log-in to access this page!'
+    print 'Username: '
+    username = STDIN.gets.chomp
+    print 'Password: '
+    password = STDIN.gets.chomp
+    password_hash = Digest::MD5.hexdigest(password)
+
+    login_result_page = agent.post(
+      'http://ck101.com/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes&inajax=1',
+      {
+        :quickforawrd => 'yes',
+        :handlekey => 'ls',
+        :username => username,
+        :password => password_hash
+      })
+    if login_result_page.body.match(/succeedhandle_ls/).nil?
+      STDERR.print "Failed to log-in."
+      return
+    end
+
+    page = agent.get(page_uri)
+  end
+
   title = page.title.split(' - ')[0].gsub('/', '').strip
 
   puts "Parsing #{title}"
