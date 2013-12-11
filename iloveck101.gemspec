@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.add_dependency 'mechanize', '~> 2.7.3'
+  s.add_dependency 'fastimage', '~> 1.5.4'
 
   s.add_development_dependency 'rake'
 end

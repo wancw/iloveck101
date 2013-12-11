@@ -3,6 +3,7 @@
 require 'set'
 require 'fileutils'
 require 'mechanize'
+require 'fastimage'
 
 def iloveck101(url)
   page_uri = URI.parse(url)
@@ -65,6 +66,18 @@ def iloveck101(url)
   puts "Found #{image_url_set.length} images."
 
   image_url_set.each { |image_url|
+    image_width, image_height = FastImage.size(image_url)
+
+    if image_width.nil? or image_height.nil?
+      puts "Failed fetching #{image_url}"
+      next
+    end
+
+    if image_width < 40 or image_height < 40
+      puts "Skip #{image_url}"
+      next
+    end
+
     puts "Downloading #{image_url}"
 
     image = agent.get(image_url)
