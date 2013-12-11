@@ -83,6 +83,7 @@ def iloveck101(url)
     image = agent.get(image_url)
 
     filename = File.expand_path(File.basename(image.uri.path), target_folder_path)
+    File.delete(filename) if File.exists?(filename)
     image.save(filename)
   }
 
